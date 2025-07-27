@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Legal Trade Mining</title>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0b0f1a;
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #4e61ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3b4ed1;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚀 Legal Trade Mining</h1>
+  <p>Login using your Pi account to begin trading</p>
+
+  <button id="login">Login with Pi</button>
+  <div class="status" id="status"></div>
+
+  <script>
+    Pi.init({ version: "2.0", sandbox: true }); // Use sandbox for testnet
+
+    document.getElementById("login").onclick = async () => {
+      document.getElementById("status").innerText = "Authenticating...";
+      try {
+        const scopes = ['username'];
+        const authResult = await Pi.authenticate(scopes, (payment) => {
+          console.log("Incomplete payment:", payment);
+        });
+
+        console.log("Authenticated:", authResult);
+
+        // Send login result to your backend
+        const res = await fetch("https://backend-ee9p.onrender.com/verify-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(authResult),
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          document.getElementById("status").innerText = "✅ Login successful: Welcome, " + authResult.user.username;
+        } else {
+          document.getElementById("status").innerText = "⚠️ Login failed. Try again.";
+        }
+
+      } catch (e) {
+        console.error("Login failed", e);
+        document.getElementById("status").innerText = "❌ Login error: " + e.message;
+      }
+    };
+  </script>
+
+</body>
+</html>
