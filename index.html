@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legal Trade Mining</title>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
+<body>
+  <h1>Welcome to Legal Trade Mining</h1>
+  <button id="login-btn">Login with Pi</button>
 
+  <script>
+    const scopes = ['username', 'payments'];
+    const onIncompletePaymentFound = (payment) => {
+      console.log("Incomplete payment:", payment);
+    };
+
+    Pi.init({ version: "2.0", sandbox: true });
+
+    document.getElementById("login-btn").addEventListener("click", async () => {
+      try {
+        const authResult = await Pi.authenticate(scopes, onIncompletePaymentFound);
+        console.log("Authenticated", authResult);
+        // Send authResult to backend
+      } catch (error) {
+        console.error("Pi Login failed", error);
+      }
+    });
+  </script>
+</body>
+</html>
